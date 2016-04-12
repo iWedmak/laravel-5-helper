@@ -1,0 +1,21 @@
+{
+    "name": "iwedmak/helper",
+    "description": "Some personal helpfull functons",
+    "keywords": ["laravel","mate"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "iWedmak Om",
+            "email": "iwedmak@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "laravel/framework": "5.*   "
+    },
+    "autoload": {
+        "psr-4": {
+            "iWedmak\\Helper\\": "src/"
+        }
+    }
+}
