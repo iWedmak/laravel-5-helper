@@ -16,6 +16,15 @@ class Mate
         return $ext;
     }
     
+    public static function file_array_filter(&$array, $ext)
+    {
+        $array = array_where($array, function ($key, $value) use($ext) 
+        {
+            return (Mate::url_extention($value)==$ext);
+        });
+        array_multisort($array, SORT_ASC);
+    }
+    
     public static function clean_drupal_value($value, $defualt=false)
     {
         if(isset($value['und'][0]) && !empty($value['und'][0]))
