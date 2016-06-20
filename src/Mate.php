@@ -1,7 +1,26 @@
 <?php namespace iWedmak\Helper;
 
+use Cache;
+
 class Mate
 {
+    
+    public static $sizes =
+        [
+            'serial'=> 
+                [
+                    '2304'=>'1152',
+                    '2160'=>'1132',
+                    '1920'=>'960',
+                    '1776'=>'888',
+                    '1248'=>'624',
+                    '1008'=>'1008',
+                    '480'=>'480',
+                    '240'=>'240',
+                    '96'=>'96',
+                    '60'=>'60'
+                ]
+        ];
     
     public static function url_extention($str)
     {
@@ -14,6 +33,18 @@ class Mate
             $ext=end($ex);
         }
         return $ext;
+    }
+    
+    public static function url_filename($str)
+    {
+        $name_a=parse_url($str);
+        $name_a=explode('/', $str);
+        $c=count($name_a);
+        if($c>0)
+        {
+            $name=$name_a[$c-1];
+        }
+        return $name;
     }
     
     public static function file_array_filter(&$array, $ext)
