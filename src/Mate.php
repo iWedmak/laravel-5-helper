@@ -1,6 +1,7 @@
 <?php namespace iWedmak\Helper;
 
 use Cache;
+use Intervention\Image\Facades\Image as Image;
 
 class Mate
 {
@@ -21,6 +22,65 @@ class Mate
                     '60'=>'60'
                 ]
         ];
+    
+    public static function image_cook($folder, $url, $name=false)
+    {
+        $ext=Mate::url_extention($url);
+        if(!$name)
+        {
+            $original_name=Mate::url_filename($url);
+            $name=Mate::name_generate($folder, $original_name, $ext);
+        }
+        
+        if(Mate::image_create($folder, $url, $name.'.'.$ext))
+        {
+            return Mate::file_data($name.'.'.$ext, $folder, $url);
+        }
+        return false;
+    }
+    
+    public static function name_generate($folder, $original_name, $ext)
+    {
+        $name=$original_name;
+        $i=0;
+        while(Storage::exists($folder.'/max/'.$name.'.'.$ext))
+        {
+            $name=$original_name.'_'.$i;
+            $i++;
+        }
+        return $name;
+    }
+    
+    public static function file_data($name, $folder, $url)
+    {
+        $file['name']=$name;
+        $file['original']=$url;
+        $file['path']=$folder;
+        $file['type']=pathinfo($url, PATHINFO_EXTENSION);
+        $file['size']=filesize(public_path($folder.'/max/'.$name));
+        return $file;
+    }
+    
+    public static function image_create($folder, $url, $name)
+    {
+        if(fopen($url, "r"))
+        {
+            $image=Image::make(file_get_contents($url));
+            $image->save(public_path($folder.'/max/'.$name), 100);
+            $lastModified = @filemtime(public_path($folder.'/max/'.$name));
+            foreach(Mate::$sizes[$folder] as $w=>$h)
+            {
+                $lastModified2 = @filemtime(public_path($folder.'/'.$w.'/'.$name));
+                if( ($lastModified==NULL) || ($lastModified2==NULL) || ($lastModified > $lastModified2))
+                {
+                    $image->fit((int)$w, (int)$h);
+                    $image->save(public_path($folder.'/'.$w.'/'.$name), 100);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
     
     public static function url_extention($str)
     {
