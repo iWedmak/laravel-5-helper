@@ -1,6 +1,6 @@
 <?php namespace iWedmak\Helper;
 
-use Cache;
+use Cache, Storage;
 use Intervention\Image\Facades\Image as Image;
 
 class Mate
@@ -20,7 +20,9 @@ class Mate
                     '240'=>'240',
                     '96'=>'96',
                     '60'=>'60'
-                ]
+                ],
+            'people'=> [],
+            'character'=> []
         ];
     
     public static function image_cook($folder, $url, $name=false)
