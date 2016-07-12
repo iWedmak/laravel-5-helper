@@ -1,7 +1,7 @@
 {
     "name": "iwedmak/helper",
     "description": "Some personal helpfull functons",
-    "keywords": ["laravel","mate"],
+    "keywords": ["laravel","mate","xcache"],
     "license": "MIT",
     "authors": [
         {
