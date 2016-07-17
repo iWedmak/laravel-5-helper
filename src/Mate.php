@@ -30,7 +30,7 @@ class Mate
         $ext=Mate::url_extention($url);
         if(!$name)
         {
-            $original_name=Mate::url_filename($url);
+            $original_name=Mate::url_filename($url, true);
             $name=Mate::name_generate($folder, $original_name, $ext);
         }
         
@@ -97,14 +97,21 @@ class Mate
         return $ext;
     }
     
-    public static function url_filename($str)
+    public static function url_filename($str, $name_only=false)
     {
-        $name_a=parse_url($str);
         $name_a=explode('/', $str);
+        pre($name_a);
         $c=count($name_a);
         if($c>0)
         {
-            $name=$name_a[$c-1];
+            if($name_only)
+            {
+                $name=str_replace('.'.Mate::url_extention($name_a[$c-1]), '', $name_a[$c-1]);
+            }
+            else
+            {
+                $name=$name_a[$c-1];
+            }
         }
         return $name;
     }
