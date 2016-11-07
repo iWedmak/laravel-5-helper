@@ -10,7 +10,7 @@ class XCacheStore extends TaggableStore implements Store {
     
     public function __construct($prefix = '')
     {
-        $this->setPrefix($prefix);
+        $this->setPrefix(($prefix)?$prefix:\Config::get('cache.prefix'));
     }
     
     public function get($key) 
