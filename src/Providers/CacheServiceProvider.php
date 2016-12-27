@@ -1,8 +1,8 @@
 <?php namespace iWedmak\Helper\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Cache;
 use iWedmak\Helper\Adapters\XCacheStore;
+use Illuminate\Support\Facades\Cache;
 
 class CacheServiceProvider extends ServiceProvider
 {

@@ -5,24 +5,25 @@ use Intervention\Image\Facades\Image as Image;
 
 class Mate
 {
-    
+    //need to move this in config file, so i can publish it
     public static $sizes =
         [
             'serial'=> 
                 [
-                    '2304'=>'1152',
-                    '2160'=>'1132',
-                    '1920'=>'960',
-                    '1776'=>'888',
-                    '1248'=>'624',
-                    '1008'=>'1008',
+                    //'2304'=>'1152',
+                    //'2160'=>'1132',
+                    //'1920'=>'960',
+                    //'1776'=>'888',
+                    //'1248'=>'624',
+                    //'1008'=>'1008',
                     '480'=>'480',
                     '240'=>'240',
                     '96'=>'96',
                     '60'=>'60'
                 ],
             'people'=> [],
-            'character'=> []
+            'character'=> [],
+            'user'=> [],
         ];
     
     public static function image_cook($folder, $url, $name=false)
@@ -58,7 +59,7 @@ class Mate
         $file['name']=$name;
         $file['original']=$url;
         $file['path']=$folder;
-        $file['type']=pathinfo($url, PATHINFO_EXTENSION);
+        $file['type']=strtok(pathinfo($url, PATHINFO_EXTENSION), '?');
         $file['size']=filesize(public_path($folder.'/max/'.$name));
         return $file;
     }
@@ -86,6 +87,36 @@ class Mate
     
     public static function url_extention($str)
     {
+        pre($str);
+        $type=get_headers($str, 1)["Content-Type"];
+        $map = array(
+            'application/pdf'   => 'pdf',
+            'application/zip'   => 'zip',
+            'image/gif'         => 'gif',
+            'image/jpeg'        => 'jpg',
+            'image/png'         => 'png',
+            'text/css'          => 'css',
+            'text/html'         => 'html',
+            'text/javascript'   => 'js',
+            'text/plain'        => 'txt',
+            'text/xml'          => 'xml',
+        );
+        if (isset($map[$type]))
+        {
+            return $map[$type];
+        }
+        else
+        {
+            return Mate::file_extention($str);
+        }
+
+        // HACKISH CATCH ALL (WHICH IN MY CASE IS
+        // PREFERRED OVER THROWING AN EXCEPTION)
+        
+    }
+    
+    public static function file_extention($str)
+    {
         $ext='jpg';
         $parse=parse_url($str);
         $ex=explode('.',$parse['path']);
@@ -94,19 +125,20 @@ class Mate
         {
             $ext=end($ex);
         }
+        $ext=strtok($ext, '?');
         return $ext;
+        
     }
     
     public static function url_filename($str, $name_only=false)
     {
         $name_a=explode('/', $str);
-        pre($name_a);
         $c=count($name_a);
         if($c>0)
         {
             if($name_only)
             {
-                $name=str_replace('.'.Mate::url_extention($name_a[$c-1]), '', $name_a[$c-1]);
+                $name=str_replace('.'.Mate::file_extention($name_a[$c-1]), '', strtok($name_a[$c-1], '?'));
             }
             else
             {
