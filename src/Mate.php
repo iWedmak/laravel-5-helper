@@ -2,6 +2,7 @@
 
 use Cache, Storage;
 use Intervention\Image\Facades\Image as Image;
+//use Illuminate\Filesystem\FileNotFoundException;
 
 class Mate
 {
@@ -60,7 +61,7 @@ class Mate
         $file['original']=$url;
         $file['path']=$folder;
         $file['type']=strtok(pathinfo($url, PATHINFO_EXTENSION), '?');
-        $file['size']=filesize(public_path($folder.'/max/'.$name));
+        $file['size']=$size = Storage::size($folder.'/max/'.$name);
         return $file;
     }
     
@@ -69,15 +70,31 @@ class Mate
         if(fopen($url, "r"))
         {
             $image=Image::make(file_get_contents($url));
-            $image->save(public_path($folder.'/max/'.$name), 100);
-            $lastModified = @filemtime(public_path($folder.'/max/'.$name));
+            //$image->save(public_path(), 100);
+            Storage::put($folder.'/max/'.$name, $image->stream()->__toString());
+            try
+            {
+                $lastModified = Storage::lastModified($folder.'/max/'.$name);
+            }
+            catch(\League\Flysystem\FileNotFoundException $e)
+            {
+                $lastModified=false;
+            }
             foreach(Mate::$sizes[$folder] as $w=>$h)
             {
-                $lastModified2 = @filemtime(public_path($folder.'/'.$w.'/'.$name));
-                if( ($lastModified==NULL) || ($lastModified2==NULL) || ($lastModified > $lastModified2))
+                try
+                {
+                    $lastModified2 = Storage::lastModified($folder.'/'.$w.'/'.$name);
+                }
+                catch(\League\Flysystem\FileNotFoundException $e)
+                {
+                    $lastModified2=false;
+                }
+                if( ($lastModified==false) || ($lastModified2==false) || ($lastModified > $lastModified2))
                 {
                     $image->fit((int)$w, (int)$h);
-                    $image->save(public_path($folder.'/'.$w.'/'.$name), 100);
+                    Storage::put($folder.'/'.$w.'/'.$name, $image->stream()->__toString());
+                    //$image->save(public_path($folder.'/'.$w.'/'.$name), 100);
                 }
             }
             return true;
@@ -87,7 +104,7 @@ class Mate
     
     public static function url_extention($str)
     {
-        pre($str);
+        //pre($str);
         $type=get_headers($str, 1)["Content-Type"];
         $map = array(
             'application/pdf'   => 'pdf',
@@ -225,6 +242,48 @@ class Mate
         return strtolower(strtr($in,$tr));
         //return $out;
     }
+    
+    public static function sizer($size)
+    {
+        preg_match('/(?<value>([0-9]*[.])?[0-9]+)\s+?(?<measure>\w)/iu', $size, $match);
+        if(isset($match['measure']))
+        {
+            switch (mb_strtoupper($match['measure'])) 
+            {
+                case 'B':
+                    $newSize = $match['value'] ;
+                    break;
+                case 'K':
+                    $newSize = $match['value'] * 1024;
+                    break;
+                case 'M':
+                    $newSize = $match['value'] * pow(1024, 2);
+                    break;
+                case 'G':
+                    $newSize = $match['value'] * pow(1024, 3);
+                    break;
+                case 'T':
+                    $newSize = $match['value'] * pow(1024, 4);
+                    break;
+                case 'P':
+                    $newSize = $match['value'] * pow(1024, 5);
+                    break;
+                case 'E':
+                    $newSize = $match['value'] * pow(1024, 6);
+                    break;
+                case 'Z':
+                    $newSize = $match['value'] * pow(1024, 7);
+                    break;
+                case 'Y':
+                    $newSize = $match['value'] * pow(1024, 8);
+                    break;
+                default:
+                    return $match['value'];
+            }
+            return $newSize;
+        }
+        return $size;
+    } 
     
     public static function match($pattern, $text, $force = true)
     {
