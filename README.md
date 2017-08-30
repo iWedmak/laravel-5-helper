@@ -1,10 +1,12 @@
 # laravel-5-helper
-FormatResponce
+**FormatResponce**
+
 Register Middleware, add this to app/Http/Kernel.php in middlewareGroups array in web, as last one of them: 
 ```php
 iWedmak\Helper\Middleware\FormatResponce::class,
 ```
-xCache
+**xCache**
+
 Register provider, add this to config/app.php in providers array: 
 ```php
 iWedmak\Helper\Providers\CacheServiceProvider::class,
