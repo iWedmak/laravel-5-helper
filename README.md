@@ -1,6 +1,7 @@
 # laravel-5-helper
 **FormatResponce**
 
+To return json or html on same route. 
 Register Middleware, add this to app/Http/Kernel.php in middlewareGroups array in web, as last one of them: 
 ```php
 iWedmak\Helper\Middleware\FormatResponce::class,
