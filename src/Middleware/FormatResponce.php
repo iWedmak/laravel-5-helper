@@ -22,7 +22,7 @@ class FormatResponce
                 $data = $response->getOriginalContent();
                 if(gettype($data)!='object' && isset($data['data']) && !empty($data['data']))
                 {
-                    if ($request->wantsJson() || !isset($data['view']))) 
+                    if ($request->wantsJson() || !isset($data['view'])) 
                     {
                         $response=response()->json($data['data'])->setJsonOptions(JSON_NUMERIC_CHECK );
                         $response->header('Content-Length',mb_strlen($response->getContent()));
