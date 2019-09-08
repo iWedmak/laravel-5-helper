@@ -144,7 +144,6 @@ class Mate
         }
         $ext=strtok($ext, '?');
         return $ext;
-        
     }
     
     public static function url_filename($str, $name_only=false)
@@ -285,6 +284,13 @@ class Mate
         return $size;
     } 
     
+    public static function size($size)
+    {
+        $units = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $power = $size > 0 ? floor(log($size, 1024)) : 0;
+        return number_format($size / pow(1024, $power), 2, '.', ',') . ' ' . $units[$power];
+    } 
+    
     public static function match($pattern, $text, $force = true)
     {
         $data = explode('[*]', $pattern);
@@ -303,7 +309,7 @@ class Mate
         return false;
     }
 
-	public static function find($start, $end, $text, $force = true)
+    public static function find($start, $end, $text, $force = true)
     {
         $text = str_ireplace(array(
           "\t", "\r", "\n", PHP_EOL 
@@ -333,4 +339,15 @@ class Mate
         return false;
     }
     
+    public static function array_intermerge($arr=[], $to_merge=[])
+    {
+        if($arr && $to_merge)
+        {
+            return array_intersect($arr, $to_merge);
+        }
+        else
+        {
+            return $arr ?? $to_merge;
+        }
+    }
 }

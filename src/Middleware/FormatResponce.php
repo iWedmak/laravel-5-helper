@@ -20,11 +20,11 @@ class FormatResponce
             if (method_exists($response, 'getOriginalContent')) 
             {
                 $data = $response->getOriginalContent();
-                if(isset($data['data']) && !empty($data['data']))
+                if(gettype($data)!='object' && isset($data['data']) && !empty($data['data']))
                 {
                     if ($request->wantsJson()) 
                     {
-                        $response=response()->json($data['data']);
+                        $response=response()->json($data['data'])->setJsonOptions(JSON_NUMERIC_CHECK );
                         $response->header('Content-Length',mb_strlen($response->getContent()));
                     } 
                     else 
